@@ -13,6 +13,11 @@ This code uses the [TTGO-T-Call][3] board. Select `ESP32 Dev Module` on `Arduino
 ## Install the following dependency library files:
 - [TinyGSM](https://github.com/vshymanskyy/TinyGSM)
 
+## Wifi
+
+* ssid - wifi ssid
+* password - wifi password
+
 ## PINOS
 
 * ANALOG_PIN - analog input
