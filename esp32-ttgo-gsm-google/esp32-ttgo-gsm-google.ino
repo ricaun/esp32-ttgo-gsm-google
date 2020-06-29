@@ -30,6 +30,8 @@ void setup() {
 
   ttgo_setup();
 
+  wifi_setup();
+
   get_body();
 
   //create a task that will be executed in the Task1code() function, with priority 1 and executed on core 0
@@ -41,7 +43,7 @@ void setup() {
     1,           /* priority of the task */
     &Task0,      /* Task handle to keep track of created task */
     0);          /* pin task to core 0 */
-  
+
 }
 
 void TaskCode0( void * pvParameters ) {
@@ -61,6 +63,7 @@ void loop0(void)
     Serial.println(String("Free mem: ") + ESP.getFreeHeap());
     add_body();
   }
+  wifi_loop();
 }
 
 void loop(void)
@@ -115,10 +118,14 @@ void google_loop()
 {
   if (google_runEvery(GOOGLE_TIME * 1000))
   {
-    //add_body();
-
-    String post = post_google(GOOGLE_URL, get_body());
-    //Serial.println(post);
+    if (wifi_connected())
+    {
+      String post = post_google(GOOGLE_URL, get_body());
+    }
+    else
+    {
+      String post = post_gprs_google(GOOGLE_URL, get_body());
+    }
   }
 }
 

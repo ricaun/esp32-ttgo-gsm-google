@@ -90,7 +90,7 @@ void ttgo_setup()
   if (strlen(simPIN) && modem.getSimStatus() != 3 ) {
     modem.simUnlock(simPIN);
   }
-  ttgo_wait_connect();
+  //ttgo_wait_connect();
 }
 
 bool ttgo_wait_connect()
@@ -156,7 +156,7 @@ bool parseURL(String url, String& protocol, String& host, int& port, String& uri
   return true;
 }
 
-String post_google(String path, String body)
+String post_gprs_google(String path, String body)
 {
   if (path == "") return "";
 
