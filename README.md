@@ -23,6 +23,11 @@ This code uses the [TTGO-T-Call][3] board. Select `ESP32 Dev Module` on `Arduino
 * GOOGLE_URL - google url script
 * GOOGLE_TIME - send to google sample
 
+# Distance
+
+Send distance insted of the analogRead, using this formula:
+`float distanceCM = analogRead(ANALOG_PIN) / 5.0;`
+
 # Google Spreadsheet
 
 For more information how to setup check the project [esp32-google-sheet][2].
