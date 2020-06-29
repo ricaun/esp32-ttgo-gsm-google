@@ -4,6 +4,8 @@
 //  created 04/03/2019
 //  by Luiz H. Cassettari
 //----------------------------------------//
+// Add ttgo_wait_connect
+//----------------------------------------//
 
 // Your GPRS credentials (leave empty, if missing)
 const char apn[]      = ""; // Your APN
@@ -88,16 +90,23 @@ void ttgo_setup()
   if (strlen(simPIN) && modem.getSimStatus() != 3 ) {
     modem.simUnlock(simPIN);
   }
+  ttgo_wait_connect();
+}
 
+bool ttgo_wait_connect()
+{
   DEBUG_PRINT(F("Waiting for network..."));
   if (!modem.waitForNetwork(240000L)) {
     DEBUG_FATAL(F("Network failed to connect"));
+    return false;
   }
 
   DEBUG_PRINT(F("Connecting to GPRS"));
   if (!modem.gprsConnect(apn, gprsUser, gprsPass)) {
     DEBUG_FATAL(F("APN failed to connect"));
+    return false;
   }
+  return true;
 }
 
 void ttgo_close()
@@ -118,7 +127,7 @@ bool parseURL(String url, String& protocol, String& host, int& port, String& uri
   if(index < 0) {
     return false;
   }
-
+  
   protocol = url.substring(0, index);
   url.remove(0, (index + 3)); // remove protocol part
 
@@ -151,10 +160,14 @@ String post_google(String path, String body)
 {
   if (path == "") return "";
 
+  Serial.println(body);
+
   String payload = "";
 
   String protocol, host, url;
   int port;
+
+  if (ttgo_wait_connect() == false) return "";
 
   if (!parseURL(path, protocol, host, port, url)) {
     DEBUG_FATAL(F("Cannot parse URL"));
@@ -198,11 +211,11 @@ String post_google(String path, String body)
     // Print available data
     while (client->available()) {
       char c = client->read();
-      Serial.print(c);
+      //Serial.print(c);
       timeout = millis();
     }
   }
-  Serial.println();
+  //Serial.println();
 
   client->stop();
   Serial.println(F("-------------------------"));

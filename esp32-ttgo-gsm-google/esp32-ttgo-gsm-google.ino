@@ -15,7 +15,7 @@
 /* GOOGLE URL */
 
 #define GOOGLE_URL "https://script.google.com/macros/s/#######################################################/exec"
-#define GOOGLE_TIME 30
+#define GOOGLE_TIME 60
 
 /* TaskHandle_t */
 
@@ -47,28 +47,35 @@ void setup() {
 void TaskCode0( void * pvParameters ) {
   while (1)
   {
-    google_loop();
+    loop0();
     vTaskDelay(10);
+  }
+}
+
+
+void loop0(void)
+{
+  if (analog_runEvery(ANALOG_TIME * 1000))
+  {
+    Serial.println(millis());
+    Serial.println(String("Free mem: ") + ESP.getFreeHeap());
+    add_body();
   }
 }
 
 void loop(void)
 {
-  if (analog_runEvery(ANALOG_TIME * 1000))
-  {
-    add_body();
-  }
+  google_loop();
 }
 
 // ----------------- analog ------------------- //
 
 float readAnalogPin()
 {
-  float f = analogRead(ANALOG_PIN);
-  f *= 3.3 / 4095.0;
-  Serial.print("ANALOG: ");
-  Serial.println(f);
-  return f;
+  float distanceCM = analogRead(ANALOG_PIN) / 5.0;
+  Serial.print("Distance: ");
+  Serial.println(distanceCM);
+  return distanceCM;
 }
 
 boolean analog_runEvery(unsigned long interval)
@@ -89,7 +96,7 @@ static String _body = "";
 
 String add_body()
 {
-  _body += ";";
+  _body = ";";
   _body += readAnalogPin();
 }
 
@@ -97,9 +104,10 @@ String get_body()
 {
   String payload = _body;
   String mac = WiFi.macAddress();
-  _body = mac;
-  return payload;
+  _body = "";
+  return mac + payload;
 }
+
 
 // ----------------- google ------------------- //
 
@@ -107,8 +115,10 @@ void google_loop()
 {
   if (google_runEvery(GOOGLE_TIME * 1000))
   {
+    //add_body();
+
     String post = post_google(GOOGLE_URL, get_body());
-    Serial.println(post);
+    //Serial.println(post);
   }
 }
 
